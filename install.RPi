@@ -33,7 +33,10 @@ $ sudo cp DeltaPVOutput/*.py /usr/local/bin
 $ cd /usr/local/bin
 
 11) Edit the systemID/PVoutput key/Serial port
-$ sudo nano DeltaPVOutput.py
+$ sudo nano pvoutputid.py
+SYSTEMID="YOUR_PVOUPUT_ID"
+APIKEY="YOUR_PVOUTPUT_API_KEY"
+
 
 12) give it a whirl
 $ python DeltaPVOutput.py
