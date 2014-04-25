@@ -1,6 +1,7 @@
 import crc,struct,sys
 from crc import CRC16
 from struct import *
+import datetime
 class DeltaInverter:
 
     inverterNum=0;
@@ -79,6 +80,36 @@ class DeltaInverter:
     def getCmdStringFor(self,cmd):
         return self.__buildCmd(self.__findCmd(cmd))
 
+    # Returns the packed command to set the inverter's system date
+    # command inludes STX, inverter number, CRC, EXT
+    # the input parameter dt is a datetime.datetime object
+    # and if not passed in the current date/time is used
+    def getCmdStringSetDate(self,dt=None):
+        if dt is None:
+            dt = datetime.datetime.now()
+        cmd = struct.pack('BBBBBB', 0x00, 0xa0, 0x06, dt.day, dt.month, dt.year % 100)
+        return self.__buildCmd(cmd)
+
+    # Returns the packed command to set the inverter's system time
+    # command inludes STX, inverter number, CRC, EXT
+    # the input parameter dt is a datetime.datetime object
+    # and if not passed in the current date/time is used
+    def getCmdStringSetTime(self,dt=None):
+        if dt is None:
+            dt = datetime.datetime.now()
+        cmd = struct.pack('BBBBB', 0x00, 0xa1, dt.hour, dt.minute, dt.second)
+        return self.__buildCmd(cmd)
+
+    # returns two packets constructed by getCmdStringSetDate and 
+    # getCmdStringSetTime. dt is a datetime.datetime object and if
+    # not passed in the current system time is used. 
+    def getCmdsSetClock(self,dt=None):
+        if dt is None:
+            dt = datetime.datetime.now()
+        cmdSetDate = self.getCmdStringSetDate(dt)
+        cmdSetTime = self.getCmdStringSetTime(dt)
+        return cmdSetDate, cmdSetTime
+
     #Returns a formatted human readble form of a response 
     def getFormattedResponse(self,cmd):
         return self.__unpackFormatted(cmd)
@@ -135,5 +166,5 @@ class DeltaInverter:
             return str(value)
         except:
             return "Error parsing string, perhaps unknown instruction"
-        
-        
+
+
