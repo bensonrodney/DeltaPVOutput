@@ -17,7 +17,7 @@ if __name__ == '__main__':
 
     #Edit your serial connection as required!!
     connection = serial.Serial('/dev/ttyUSB0',19200,timeout=0.4);
-     
+
     logTime = strftime('%Y%m%d-%H:%M')
     logDate = strftime('%Y%m%d')
     logFile = "./log/solar.log.%s" % strftime('%Y%m%d')
@@ -29,7 +29,7 @@ if __name__ == '__main__':
 
     inv1 = DeltaInverter(1) #init Inverter 1
     #Get the Daily Energy thus far
-    
+
     data = {}
     cmds = ['DC Cur1', 'DC Volts1', 'DC Pwr1', 'DC Cur2', 'DC Volts2', 'DC Pwr2', 'AC Current', 'AC Volts', 'AC Power', 'AC I Avg', 'AC V Avg', 'AC P Avg', 'Day Wh', 'Uptime', 'AC Temp', 'DC Temp']
     success = True
@@ -45,9 +45,10 @@ if __name__ == '__main__':
         else :
             value = inv1.getValueFromResponse(response)
             data[string.replace(" ", "_")] = "{0}".format(value)
-            
+
             # if the day's file doesn't yet exist and the time update hasn't been done
-            # set the inverter's system time - it seems to messed up sometimes making bogus daily energy totals
+            # set the inverter's system time - it seems to get messed up sometimes making bogus 
+            # daily energy totals
             if (not timeUpdateDone) and (not os.path.isfile(logFile)):
                 cmdSetDate,cmdSetTime = inv1.getCmdsSetClock()
                 connection.write(cmdSetDate)
@@ -55,8 +56,8 @@ if __name__ == '__main__':
                 connection.write(cmdSetTime)
                 response = connection.read(100)
                 timeUpdateDone = True
-                
-    if success :		
+
+    if success :
         t_energy = 'v1={0}'.format(data['Day_Wh'])
         t_power = 'v2={0}'.format(data['AC_Power'])
         t_volts = 'v6={0}'.format(data['AC_Volts'])
